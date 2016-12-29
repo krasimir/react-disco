@@ -4,7 +4,8 @@
   "description": "Step by step implementation of React",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "transpile": "babel ./app/src --out-dir ./app/public"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/krasimir/react-disco/issues"
   },
-  "homepage": "https://github.com/krasimir/react-disco"
+  "homepage": "https://github.com/krasimir/react-disco",
+  "devDependencies": {
+    "babel-cli": "6.18.0",
+    "babel-plugin-transform-react-jsx": "6.8.0"
+  }
 }

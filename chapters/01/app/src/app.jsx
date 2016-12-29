@@ -4,7 +4,7 @@ class App {
 
     return (
       <h1>{ greetings }
-        <span style={ fontWeight: 'bold' }>world</span>
+        <span style={ { fontWeight: 'bold' } }>world</span>
       </h1>
     );
   }
