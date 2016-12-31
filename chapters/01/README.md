@@ -8,7 +8,7 @@ Today (December, 2016) the best transpiler in the JavaScript ecosystem is [Babel
 
 In this chapter we are dealing only for understanding the code. We are not bundling it. Babel is actually only transpiler and the output of it is not production ready code (in most of the cases). In the end we want a single file where the `import`s (`require`s) are resolved properly. Babel is not producing such file. That is a subject of the next chapter. Here we'll write a simple file containing JSX tags and we will expect to see it transformed to valid ES5 JavaScript.
 
-### Basic files structure
+## Basic setup
 
 Let's start with the following directories and files:
 
@@ -23,9 +23,9 @@ lib
 package.json
 ```
 
-Under `app/src` we have our React code that we want transpiled and saved into `app/public`. The `lib` folder will stay empty for now. `.babelrc` will contain our Babel configuration. Here's how `package.json` looks like:
+Under `app/src` we will have our React code that we want transpiled and saved into `app/public`. The `lib` will keep the source code of our React implementation but will stay empty for now. `.babelrc` will contain our Babel's configuration. Here's how `package.json` looks like:
 
-```
+```json
 {
   ...
   "scripts": {
@@ -39,8 +39,27 @@ Under `app/src` we have our React code that we want transpiled and saved into `a
 }
 ```
 
-We are registering a single [npm script](https://docs.npmjs.com/misc/scripts) for running babel. The dependencies that we need are:
+We are registering a single [npm script](https://docs.npmjs.com/misc/scripts) for running Babel. The dependencies that we need are:
 
 * [babel-cli](https://babeljs.io/docs/usage/cli/) - the actual transpiler
 * [babel-plugin-transform-react-jsx](https://babeljs.io/docs/plugins/transform-react-jsx/) - a plugin for understanding JSX syntax
 * [babel-preset-es2015](https://babeljs.io/docs/plugins/preset-es2015/) - a collection of plugins needed for converting to ES5 compatible code
+
+## First try
+
+In general we want to stick with React's interface so our starting point will be a class that has a `render` method and outputs something on the screen:
+
+```js
+// src/app.jsx
+class App {
+  render() {
+    const greetings = 'Hello';
+
+    return (
+      <h1>{ greetings }
+        <span style={ { fontWeight: 'bold' } }>world</span>
+      </h1>
+    );
+  }
+}
+```
