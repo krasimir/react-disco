@@ -25,7 +25,7 @@ package.json
 
 Under `app/src` we will have our React code that we want transpiled and saved into `app/public`. The `lib` will keep the source code of our React implementation but will stay empty for now. `.babelrc` will contain our Babel's configuration. Here's how `package.json` looks like:
 
-```json
+```js
 {
   ...
   "scripts": {
@@ -45,9 +45,20 @@ We are registering a single [npm script](https://docs.npmjs.com/misc/scripts) fo
 * [babel-plugin-transform-react-jsx](https://babeljs.io/docs/plugins/transform-react-jsx/) - a plugin for understanding JSX syntax
 * [babel-preset-es2015](https://babeljs.io/docs/plugins/preset-es2015/) - a collection of plugins needed for converting to ES5 compatible code
 
-## First try
+The last bit of the setup is our `.babelrc` file:
 
-In general we want to stick with React's interface so our starting point will be a class that has a `render` method and outputs something on the screen:
+```
+// .babelrc
+{
+  "presets": ["es2015"],
+  "plugins": ["transform-react-jsx"]
+}
+
+```
+
+## Wrapping the transpilation
+
+We want to stick with React's interface so our starting point will be a class that has a `render` method and outputs something on the screen:
 
 ```js
 // src/app.jsx
@@ -63,3 +74,102 @@ class App {
   }
 }
 ```
+
+Notice that we have several JSX expressions and tag nesting. That's of course not all the JSX features but it will be nice to start with something a little bit more advanced so we are sure that the transpiled code is what we want.
+
+If we try running `npm run transpile` we will get the following `app/public/app.js` file:
+
+```js
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var App = function () {
+  function App() {
+    _classCallCheck(this, App);
+  }
+
+  _createClass(App, [{
+    key: 'render',
+    value: function render() {
+      var greetings = 'Hello';
+
+      return React.createElement(
+        'h1',
+        null,
+        greetings,
+        React.createElement(
+          'span',
+          { style: { fontWeight: 'bold' } },
+          'world'
+        )
+      );
+    }
+  }]);
+
+  return App;
+}();
+```
+
+We may ignore the `_createClass` function because that's the polyfill of the `class` definition. The interesting bit is the declaration of our `App` component:
+
+```js
+_createClass(App, [{
+  key: 'render',
+  value: function render() {
+    var greetings = 'Hello';
+
+    return React.createElement(
+      'h1',
+      null,
+      greetings,
+      React.createElement(
+        'span',
+        { style: { fontWeight: 'bold' } },
+        'world'
+      )
+    );
+  }
+}]);
+```
+
+It looks all fine but there is this `React.createElement` call. We want to replace that with our own library so we get the `h1` and `span` sent there. To achieve that we have to modify our `.babelrc` file:
+
+```
+{
+  "presets": ["es2015"],
+  "plugins": [
+    ["transform-react-jsx", {
+      "pragma": "D"
+    }]
+  ]
+}
+```
+
+The value of `pragma` property replaces the `React.createElement` invocations. Another run of `npm run transpile` will result in:
+
+```js
+_createClass(App, [{
+  key: 'render',
+  value: function render() {
+    var greetings = 'Hello';
+
+    return D(
+      'h1',
+      null,
+      greetings,
+      D(
+        'span',
+        { style: { fontWeight: 'bold' } },
+        'world'
+      )
+    );
+  }
+}]);
+```
+
+That's better. Now we can ship this code to the browser and if there is a global `D` function available we will be able to process the tag definitions.
+
+In the next chapter we will start shaping our library. Check it out [here](../02/).
